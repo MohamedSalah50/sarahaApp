@@ -29,7 +29,7 @@ export function localFileUpload({
     },
 
     filename: function (req, file, callback) {
-      console.log({ file });
+      // console.log({ file });
       const uniqueFileName =
         Date.now() + "_" + Math.random() + "_" + file.originalname;
 

@@ -20,13 +20,24 @@ import {
 } from "../../utils/security/hashing.security.js";
 import { customAlphabet } from "nanoid";
 import revokeTokenModel from "../../db/models/revoke.token.model.js";
+import {
+  cloud,
+  deleteFolderByPrefix,
+  deleteResources,
+  destroyFile,
+  uploadFile,
+  uploadFiles,
+} from "../../utils/multer/cloudinary.js";
 
 export const getUser = asyncHandler(async (req, res, next) => {
+
+  const user = await findOne({model:userModel,filter:{_id:req.user._id},populate:[{path:"messages"}]})
+
   req.user.phone = await decryptEncryption({
     cipherText: req.user.phone,
   });
 
-  return successResponse({ res, data: { user: req.user } });
+  return successResponse({ res, data: { user } });
 });
 
 export const shareProfile = asyncHandler(async (req, res, next) => {
@@ -162,16 +173,20 @@ export const hardDelete = asyncHandler(async (req, res, next) => {
 
   const user = await deleteOne({
     model: userModel,
-    filter: { _id: userId || req.user._id, freezedAt: { $exists: true } },
+    filter: { _id: userId, deletedAt: { $exists: true } },
   });
 
-  return user.deletedCount
+  if (user.deletedCount) {
+    await deleteFolderByPrefix({ prefix: `user/${userId}` });
+  }
+
+  return user.deletedCount 
     ? successResponse({ res, data: { user } })
     : next(new Error("not registered user", { cause: 404 }));
 });
 
 export const logout = asyncHandler(async (req, res, next) => {
-  console.log(req.decoded);
+  // console.log(req.decoded);
 
   await create({
     model: revokeTokenModel,
@@ -186,22 +201,48 @@ export const logout = asyncHandler(async (req, res, next) => {
 });
 
 export const profileImage = asyncHandler(async (req, res, next) => {
-  // console.log({ serviceFile: req.file });
+  const { secure_url, public_id } = await uploadFile({
+    file: req.file,
+    path: `user/${req.user._id}`,
+  });
+  const user = await findOneAndUpdate({
+    model: userModel,
+    filter: { _id: req.user._id },
+    data: {
+      picture: { secure_url, public_id },
+    },
+    options: {
+      new: false,
+    },
+  });
 
-  // let cover = [];
+  if (user?.picture?.public_id) {
+    await destroyFile({ public_id: user.picture.public_id });
+  }
 
-  // for (const file of req.files) {
-  //   cover.push(file.finalPath);
-  // }
+  return successResponse({ res, data: { user } });
+});
+
+export const profileCoverImage = asyncHandler(async (req, res, next) => {
+  const attachments = await uploadFiles({
+    files: req.files,
+    path: `user/${req.user._id}/cover`,
+  });
 
   const user = await findOneAndUpdate({
     model: userModel,
     filter: { _id: req.user._id },
     data: {
-      picture: req.file.finalPath,
-      // cover
+      cover: attachments,
     },
+    options: { new: false },
   });
 
-  return successResponse({ res, data: {} });
+  if (user?.cover?.length) {
+    await deleteResources({ public_ids: user.cover.map((el) => el.public_id) });
+  }
+
+  return successResponse({ res, data: { user } });
 });
+
+

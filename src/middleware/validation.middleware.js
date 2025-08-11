@@ -20,11 +20,21 @@ export const generalFields = {
   phone: joi.string().pattern(new RegExp(/^(002|\+2)?01[0125][0-9]{8}$/)),
   otp: joi.string().pattern(new RegExp(/^\d{6}$/)),
   id: joi.string().custom(async (value, helper) => {
-    // console.log({ value, match: Types.ObjectId.isValid(value) });
     return Types.ObjectId.isValid(value)
       ? true
       : helper.message("in-valid mongoDB id");
   }),
+  file: {
+    fieldname: joi.string(),
+    originalname: joi.string(),
+    encoding: joi.string(),
+    mimetype: joi.string(),
+    finalPath: joi.string(),
+    destination: joi.string(),
+    filename: joi.string(),
+    path: joi.string(),
+    size: joi.number().positive(),
+  },
 };
 
 export const validation = (schema) => {

@@ -13,8 +13,9 @@ import {
   localFileUpload,
 } from "../../utils/multer/local.multer.js";
 import multer from "multer";
+import { cloudFileUpload } from "../../utils/multer/cloud.multer.js";
 
-const router = Router();
+const router = Router({caseSensitive:true,strict:true});
 
 router.get(
   "/",
@@ -75,10 +76,10 @@ router.post("/logout", authentication(), userService.logout);
 router.patch(
   "/image",
   authentication(),
-  localFileUpload({
-    customPath: "user",
+  cloudFileUpload({
     fileValidation: fileValidators.image,
-  }).single("attachment"),
+  }).single("image"),
+  validation(validators.profileImage),
   // .array("attachment")
   // .fields([
   //   {name:"profileImage",maxCount:1},
@@ -86,6 +87,17 @@ router.patch(
   // ]),
   // .any()
   userService.profileImage
+);
+
+router.patch(
+  "/profile-cover-images",
+  authentication(),
+  localFileUpload({
+    customPath: "user",
+    fileValidation: fileValidators.image,
+  }).array("images", 2),
+  validation(validators.profileCoverImage),
+  userService.profileCoverImage
 );
 
 router.use((err, req, res, next) => {

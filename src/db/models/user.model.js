@@ -70,8 +70,8 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
     },
-    picture: String,
-    cover: [String],
+    picture: { secure_url: String, public_id: String },
+    cover: [{ secure_url: String, public_id: String }],
     forgotCode: String,
     confirmEmail: Date,
     otpCreatedAt: Date,
@@ -98,6 +98,15 @@ userSchema
     return `${this.firstName} +" "+ ${this.lastName}`;
   });
 
+
+
+  userSchema
+  .virtual("messages",{
+    localField:"_id",
+    foreignField:"recievedBy",
+    ref:"Message"
+  })
+  
 const userModel = mongoose.models.User || mongoose.model("User", userSchema);
 export default userModel;
 
