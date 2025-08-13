@@ -40,12 +40,12 @@ export const generalFields = {
 export const validation = (schema) => {
   return asyncHandler(async (req, res, next) => {
     const validationErrors = [];
+
     for (const key of Object.keys(schema)) {
-      const validationResult = schema[key].validateAsync(req[key], {
-        abortEarly: false,
-      });
-      if (validationResult.error) {
-        validationErrors.push(validationResult.error?.details);
+      try {
+        await schema[key].validateAsync(req[key], { abortEarly: false });
+      } catch (error) {
+        validationErrors.push(error.details);
       }
     }
 

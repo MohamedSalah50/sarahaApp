@@ -14,8 +14,10 @@ const messageSchema = new mongoose.Schema(
     recievedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required:true
+      required: true,
     },
+    freezedAt: Date,
+    freezedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   },
   { timestamps: true }
 );

@@ -34,7 +34,7 @@ async function bootstrap() {
 
   //cors
   app.use(cors());
-  app.use(morgan("dev"))
+  // app.use(morgan("dev"))
   
 
   const limiter = rateLimit({
@@ -47,7 +47,7 @@ async function bootstrap() {
   standardHeaders:"draft-8" 
 })
 
-app.use(limiter)
+// app.use(limiter)
   //db
   await connectDb();
 
@@ -87,7 +87,7 @@ app.use(limiter)
   cronjob();
 
   app.listen(port, () => {
-    // console.log(`Example app listening on port ${port}`);
+    console.log(`Example app listening on port ${port}`);
   });
 }
 

@@ -15,21 +15,46 @@ export const sendMessage = {
   file: joi
     .array()
     .items(
-      joi
-        .object()
-        .keys({
-          fieldname: generalFields.file.fieldname
-            .valid("attachments")
-            .required(),
-          originalname: generalFields.file.originalname.required(),
-          encoding: generalFields.file.encoding.required(),
-          mimetype: generalFields.file.mimetype
-            .valid(...fileValidators.image)
-            .required(),
-          destination: generalFields.file.destination.required(),
-          filename: generalFields.file.filename.required(),
-          path: generalFields.file.path.required(),
-          size: generalFields.file.size.required(),
-        })
-    ).max(2),
+      joi.object().keys({
+        fieldname: generalFields.file.fieldname.valid("attachments").required(),
+        originalname: generalFields.file.originalname.required(),
+        encoding: generalFields.file.encoding.required(),
+        mimetype: generalFields.file.mimetype
+          .valid(...fileValidators.image)
+          .required(),
+        destination: generalFields.file.destination.required(),
+        filename: generalFields.file.filename.required(),
+        path: generalFields.file.path.required(),
+        size: generalFields.file.size.required(),
+      })
+    )
+    .max(2),
+};
+
+export const getMessage = {
+  params: joi
+    .object()
+    .keys({
+      messageId: generalFields.id.required(),
+    })
+    .required(),
+};
+
+
+export const freezeMessage = {
+  params: joi
+    .object()
+    .keys({
+      messageId: generalFields.id.required(),
+    })
+    .required(),
+};
+
+export const hardDeleteMessage = {
+  params: joi
+    .object()
+    .keys({
+      messageId: generalFields.id.required(),
+    })
+    .required(),
 };
