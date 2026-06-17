@@ -188,7 +188,7 @@ npm start
 
 > Test all endpoints with the published collection:
 
-[![Postman](https://documenter.getpostman.com/view/42944447/2sB34ijzWW)
+[![Postman](https://img.shields.io/badge/Postman-Collection-FF6C37?style=flat&logo=postman&logoColor=white)](https://documenter.getpostman.com/view/42944447/2sB34ijzWW)
 
 ---
 
